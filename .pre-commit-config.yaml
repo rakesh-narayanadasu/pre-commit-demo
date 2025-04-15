@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: debug-statements
+
+  - repo: local
+    hooks:
+      - id: maven-java-checks
+        name: Maven Checks (Spotless, Checkstyle, Tests, Coverage)
+        entry: ./scripts/run-java-checks.sh
+        language: script
+        types: [java]
+
+  - repo: local
+    hooks:
+      - id: maven-java-checks
+        name: Maven Checks (PowerShell)
+        entry: powershell.exe ./scripts/run-java-checks.ps1
+        language: system
+        types: [java]
