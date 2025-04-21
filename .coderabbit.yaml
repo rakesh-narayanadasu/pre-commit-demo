@@ -1,131 +1,107 @@
-# .coderabbit.yaml
-version: 1
+# CodeRabbit configuration file for a Spring Boot application
+# Note: This configuration adheres to CodeRabbit's supported schema
 
-# Linting checks for Spring Boot (Java)
-linters:
-  checkstyle: # Java linting with Spring Boot conventions
-    enabled: true
-    config: checkstyle.xml # Assumes Checkstyle config file with Spring Boot rules
-  pmd: # Static code analysis for Java
-    enabled: true
-    config: pmd-ruleset.xml # Assumes PMD ruleset file with Spring Boot best practices
-  spotbugs: # Bug detection for Java
-    enabled: true
-    config: spotbugs.xml # Assumes SpotBugs config file
-  google-java-format: # Java code formatting
-    enabled: true
-    config: google-java-format.xml # Assumes Google Java Format config
+# Enable or disable CodeRabbit reviews
+reviews:
+  enabled: true
+  # Minimum confidence level for suggestions (0.0 to 1.0)
+  confidence: 0.7
+  # Enable analysis for specific file types
+  file_extensions:
+    - .java
+    - .xml
+    - .yml
+    - .properties
+
+# Language-specific settings
+languages:
+  java:
+    # Linting and formatting
+    lint:
+      enabled: true
+      tools:
+        - name: checkstyle
+          config_file: checkstyle.xml
+        - name: pmd
+          config_file: pmd-ruleset.xml
+        - name: spotbugs
+          config_file: spotbugs.xml
+        - name: google-java-format
+          config_file: google-java-format.xml
+    # Code quality checks
+    quality:
+      enabled: true
+      checks:
+        complexity:
+          max: 10 # Maximum cyclomatic complexity per method
+        duplication:
+          max_percentage: 3 # Maximum percentage of duplicated code
+        maintainability:
+          min_index: 70 # Minimum maintainability index (0-100)
+        javadoc:
+          enabled: true
+          require: true # Require Javadoc for public classes/methods
+    # Best practices for Spring Boot
+    best_practices:
+      enabled: true
+      checks:
+        exception_handling:
+          require_controller_advice: true # Use @ControllerAdvice
+        injection:
+          prefer_constructor: true # Prefer constructor injection over @Autowired
+        logging:
+          prefer_slf4j: true # Use SLF4J for logging
+        naming:
+          controllers: "*Controller" # Controller class names
+          services: "*Service" # Service class names
+          repositories: "*Repository" # Repository class names
+    # Security checks
+    security:
+      enabled: true
+      min_severity: medium # Report medium and high-severity issues
 
 # Code coverage settings
 coverage:
   enabled: true
-  minimum: 85 # Minimum coverage percentage
+  min_percentage: 85 # Minimum coverage percentage
+  report_path: target/site/jacoco/jacoco.xml # JaCoCo report path
+  fail_on_threshold: true # Fail if coverage is below threshold
+  branch_coverage: true # Enforce branch coverage
+
+# File patterns to include/exclude for review
+paths:
+  include:
+    - "**/*.java"
+    - "**/*.xml"
+    - "**/*.yml"
+    - "**/*.properties"
+  exclude:
+    - "**/target/**"
+    - "**/dist/**"
+    - "**/build/**"
+    - "**/coverage/**"
+    - "**/test/**"
+    - "**/generated/**"
+    - "**/*.generated.*"
+
+# CI integration settings
+ci:
+  fail_on_error: true # Fail CI if critical issues are found
   report:
-    java: target/site/jacoco/jacoco.xml # JaCoCo coverage report for Spring Boot
-  fail_on_threshold: true # Fail CI if coverage is below threshold
-  branch_coverage: true # Enforce branch coverage in addition to line coverage
-
-# Code quality checks
-quality:
-  enabled: true
-  checks:
-    complexity: # Cyclomatic complexity
-      threshold: 10 # Maximum complexity score per method
-    duplication: # Code duplication detection
-      threshold: 3 # Maximum percentage of duplicated code
-    maintainability: # Maintainability index
-      threshold: 70 # Minimum maintainability index (0-100)
-    security: # Security vulnerability scanning
-      enabled: true
-      severity: medium # Report medium and high-severity issues
-    cognitive_complexity: # Cognitive complexity for better code readability
-      threshold: 15 # Maximum cognitive complexity per method
-    test_coverage: # Ensure test files exist
-      enabled: true
-      minimum_tests_per_file: 1 # At least one test per source file
-    documentation: # Check for code documentation
-      enabled: true
-      require_javadoc: true # Require Javadoc for public classes/methods
-      languages:
-        - java
-
-# Best practices enforcement for Spring Boot
-best_practices:
-  enabled: true
-  checks:
-    dead_code: # Detect unused code
-      enabled: true
-    error_handling: # Ensure proper error handling
-      enabled: true
-      require_try_catch: # Require try-catch for critical operations
-        java: true
-      spring_specific:
-        exception_handling: # Enforce Spring exception handling
-          enabled: true
-          require_controller_advice: true # Use @ControllerAdvice for global exception handling
-    naming_conventions: # Enforce Spring Boot naming conventions
-      enabled: true
-      rules:
-        java: camelCase # Variables and methods
-        spring:
-          controllers: "*Controller" # Controller class names should end with Controller
-          services: "*Service" # Service class names should end with Service
-          repositories: "*Repository" # Repository class names should end with Repository
-    logging: # Ensure proper logging practices
-      enabled: true
-      require_logging:
-        - errors # Log all errors
-        - warnings # Log warnings for critical operations
-      spring_logging:
-        enabled: true
-        prefer_slf4j: true # Use SLF4J over System.out or other logging
-    spring_configuration: # Spring Boot-specific best practices
-      enabled: true
-      checks:
-        avoid_autowired_fields: true # Prefer constructor injection over @Autowired fields
-        use_configuration_properties: true # Use @ConfigurationProperties for externalized configuration
-        avoid_component_scan_abuse: true # Limit @ComponentScan scope
-        validate_bean_definitions: true # Ensure beans are properly defined
-    dependency_management: # Ensure secure and updated dependencies
-      enabled: true
-      check_vulnerabilities: true # Scan for known vulnerabilities in dependencies
-      prefer_spring_boot_starter: true # Use Spring Boot Starter dependencies where applicable
-
-# File patterns to include/exclude
-include:
-  - "**/*.java" # Java source files
-  - "**/*.xml" # Spring configuration files (e.g., applicationContext.xml)
-  - "**/*.yml" # Spring Boot YAML configuration files
-  - "**/*.properties" # Spring Boot properties files
-exclude:
-  - "**/target/**" # Maven build output
-  - "**/dist/**" # Build output
-  - "**/build/**" # Build output
-  - "**/coverage/**" # Coverage reports
-  - "**/test/**" # Test directories
-  - "**/generated/**" # Generated source files
-  - "**/*.generated.*" # Generated files
-
-# General settings
-fail_on_error: true # Fail CI pipeline on any lint, coverage, or quality error
-parallel: true # Run checks in parallel for faster execution
-cache: true # Cache results for faster subsequent runs
-incremental: true # Only check changed files in CI
-report_formats: # Output formats for reports
-  - json
-  - html
-max_file_size: 1MB # Skip files larger than 1MB to avoid performance issues
-timeout: 300s # Maximum time for checks to complete (5 minutes)
-
-# Notifications for CI integration
-notifications:
-  enabled: true
-  ci:
+    formats:
+      - json
+      - html
+  notifications:
     github: true # Post results as GitHub checks
-    gitlab: true # Post results as GitLab pipeline annotations
-  slack: # Notify team on Slack for critical issues
-    enabled: true
-    webhook: "${SLACK_WEBHOOK_URL}" # Environment variable for Slack webhook
-    notify_on: # Notify on specific events
-      - failure
-      - security_issues
+    slack:
+      enabled: true
+      webhook_env: SLACK_WEBHOOK_URL # Environment variable for Slack webhook
+      events:
+        - failure
+        - security_issues
+
+# Performance settings
+performance:
+  max_file_size: 1048576 # 1MB limit for files
+  timeout: 300 # Maximum time for checks (in seconds)
+  incremental: true # Only check changed files
